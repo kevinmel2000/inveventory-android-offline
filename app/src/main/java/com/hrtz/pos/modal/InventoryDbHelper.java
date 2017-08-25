@@ -195,7 +195,7 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
 
         //get transactions for each sales
         for (Sales s : sales) {
-            selectQuery = "SELECT  * FROM " + SALESINVENTORY_TABLE_NAME +" si, "+
+            selectQuery = "SELECT * FROM " + SALESINVENTORY_TABLE_NAME +" si, "+
                     INVENTORY_TABLE_NAME+" inventory WHERE si."+SALESINVENTORY_COLUMN_SALES_ID
             +" = "+s.getId()+" AND si."+SALESINVENTORY_COLUMN_INVENTORY_ID+" = inventory."+KEY_ID;
 
@@ -208,9 +208,15 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
             if (c.moveToFirst()) {
                 do {
                     Sales_Inventory sale = new Sales_Inventory();
-                    sale.setId_inventory(c.getInt((c.getColumnIndex(SALESINVENTORY_COLUMN_INVENTORY_ID))));
-                    sale.setInventory(c.getString(c.getColumnIndex(INVENTORY_COLUMN_NAME_TITLE)));
-                    sale.setCount(c.getInt(c.getColumnIndex(SALESINVENTORY_COLUMN_COUNT)));
+                    String nameInventory = c.getString(c.getColumnIndex(INVENTORY_COLUMN_NAME_TITLE));
+                    int price = c.getInt(c.getColumnIndex(INVENTORY_COLUMN_NAME_PRICE));
+                    int stock = c.getInt(c.getColumnIndex(INVENTORY_COLUMN_NAME_STOCK));
+
+                    sale.setInventory(new Inventory(nameInventory, stock, price));
+                    int count = c.getInt(c.getColumnIndex(SALESINVENTORY_COLUMN_COUNT));
+
+                    sale.setCount(count);
+
                     salesList.add(sale);
                 } while (c.moveToNext());
             }

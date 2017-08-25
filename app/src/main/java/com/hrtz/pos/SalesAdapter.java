@@ -62,9 +62,9 @@ public class SalesAdapter extends BaseAdapter implements ListAdapter {
         tvItemList = (TextView) view.findViewById(R.id.list_sales_details);
         StringBuilder stringBuilder = new StringBuilder();
         for(Sales_Inventory s: list.get(position).getSales_inventoryList()){
-            stringBuilder.append(s.getCount()+" X "+s.getInventory() + " ("+s.getTotal()+")");
+            Inventory i = s.getInventory();
+            stringBuilder.append(s.getCount()+" X "+i.getName() + " ("+i.getPrice()+" | "+s.getCount()*i.getPrice()+")");
             stringBuilder.append(System.getProperty("line.separator"));
-
         }
         tvItemList.setText(stringBuilder.toString());
 

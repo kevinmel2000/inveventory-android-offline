@@ -8,17 +8,17 @@ public class Sales_Inventory {
     private long id_inventory;
     private int count;
     private int total;
-    private String inventory;
+    private Inventory inventory;
 
     public void setId_inventory(long id_inventory) {
         this.id_inventory = id_inventory;
     }
 
-    public String getInventory() {
+    public Inventory getInventory() {
         return inventory;
     }
 
-    public void setInventory(String inventory) {
+    public void setInventory(Inventory inventory) {
         this.inventory = inventory;
     }
 
@@ -45,6 +45,7 @@ public class Sales_Inventory {
     public void setId_inventory(int id_inventory) {
         this.id_inventory = id_inventory;
     }
+
 
     public int getCount() {
         return count;
