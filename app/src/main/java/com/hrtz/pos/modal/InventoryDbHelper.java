@@ -24,7 +24,7 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
     private static final String LOG = InventoryDbHelper.class.getName();
 
 
-    public final static int DATABASE_VERSION = 1;
+    public final static int DATABASE_VERSION = 2;
     public final static String DATABASE_NAME = "Inventory.db";
 
     //table and column for fragment_inventory
@@ -133,16 +133,39 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         return inventories;
     }
 
+
+    public void deleteInventory(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(INVENTORY_TABLE_NAME, KEY_ID + " = ?",
+                new String[] { String.valueOf(id) });
+    }
+
+    /*
+     * Updating a inventory
+     */
+    public int updateInventory(Inventory inventory) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(INVENTORY_COLUMN_NAME_TITLE, inventory.getName());
+        values.put(INVENTORY_COLUMN_NAME_PRICE, inventory.getPrice());
+        values.put(INVENTORY_COLUMN_NAME_STOCK, inventory.getStock());
+        values.put(KEY_CREATED_AT, getDateTime());
+
+        // updating row
+        return db.update(INVENTORY_TABLE_NAME, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(inventory.getId()) });
+    }
+
     /**
      * Creating a todo
      */
-    public long createSales(Sales sales, Sales_Inventory[] sales_inventories, int total) {
+    public long createSales(Sales_Inventory[] sales_inventories, int total) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(SALES_COLUMN_NAME_TOTAL, total);
         values.put(KEY_CREATED_AT, getDateTime());
-
         // insert row
         long sales_id = db.insert(SALES_TABLE_NAME, null, values);
 
@@ -150,6 +173,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         for (Sales_Inventory si : sales_inventories) {
             createSalesInventory(sales_id, si);
         }
+
+
 
         return sales_id;
     }
@@ -162,7 +187,7 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(SALESINVENTORY_COLUMN_SALES_ID, sales_id);
-        values.put(SALESINVENTORY_COLUMN_INVENTORY_ID, si.getId_inventory());
+        values.put(SALESINVENTORY_COLUMN_INVENTORY_ID, si.getInventory().getId());
         values.put(SALESINVENTORY_COLUMN_COUNT, si.getCount());
 
         // insert row
@@ -234,5 +259,14 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    public void deleteSales(int id) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            db.delete(SALES_TABLE_NAME, KEY_ID + " = ?",
+                    new String[] { String.valueOf(id) });
+            db.delete(SALESINVENTORY_TABLE_NAME, SALESINVENTORY_COLUMN_SALES_ID + " = ?",
+                new String[] {String.valueOf(id)});
+
     }
 }

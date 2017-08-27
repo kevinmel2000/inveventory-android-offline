@@ -38,15 +38,6 @@ public class Sales_Inventory {
 
     }
 
-    public long getId_inventory() {
-        return id_inventory;
-    }
-
-    public void setId_inventory(int id_inventory) {
-        this.id_inventory = id_inventory;
-    }
-
-
     public int getCount() {
         return count;
     }

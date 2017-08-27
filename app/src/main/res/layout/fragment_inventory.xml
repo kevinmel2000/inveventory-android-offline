@@ -39,8 +39,11 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_add_black_48dp"
        android:layout_alignParentBottom="true"
+        android:id="@+id/btnAddInventory"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="40dp"
-        android:layout_marginRight="40dp"/>
+        android:layout_marginRight="40dp"
+        android:onClick="onClick"
+        />
 
 </RelativeLayout>

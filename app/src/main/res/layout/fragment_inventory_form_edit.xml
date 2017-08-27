@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="10dp"
+    android:background="@color/colorPrimary"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit Barang"
+        android:gravity="center"
+        android:layout_margin="10dp"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:id="@+id/tvtitleeditinventory"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#0000"
+        android:layout_below="@id/tvtitleeditinventory"></View>
+
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nama Barang: "
+        android:id="@+id/label_inventoryformedit_nama"
+        android:layout_below="@id/tvtitleeditinventory"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_inventoryformedit_nama"
+        android:id="@+id/et_inventoryformedit_nama"
+        />
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Harga Barang"
+        android:id="@+id/label_inventoryformedit_harga"
+        android:layout_below="@+id/et_inventoryformedit_nama"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_inventoryformedit_harga"
+        android:id="@+id/et_inventoryformedit_harga"
+        android:inputType="number"
+        />
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Jumlah Barang: "
+        android:id="@+id/label_inventoryformedit_jumlah"
+        android:layout_below="@id/et_inventoryformedit_harga"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_inventoryformedit_jumlah"
+        android:id="@+id/et_inventoryformedit_jumlah"
+        android:inputType="number"
+        />
+
+    <Button
+        android:layout_margin="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit Barang"
+        android:background="@color/colorAccent"
+        android:layout_below="@id/et_inventoryformedit_jumlah"
+        android:id="@+id/btn_inventoryformedit_tambah"
+        android:padding="5dp"
+
+        android:layout_alignParentRight="true"/>
+
+</RelativeLayout>

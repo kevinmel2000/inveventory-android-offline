@@ -1,5 +1,6 @@
 package com.hrtz.pos.modal;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import java.util.List;
  * Created by harit on 8/21/2017.
  */
 
-public class Sales {
+public class Sales implements Serializable {
     private int id;
     private String created_at;
     private int total;

@@ -29,7 +29,12 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvsales"
             android:text="23 - Aug - 2017"
-            android:id="@+id/dateSalesBegin" />
+            android:id="@+id/dateSalesBegin"
+            android:background="@color/colorLight"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginRight="5dp"
+            />
 
         <Button
             android:layout_width="wrap_content"
@@ -37,7 +42,11 @@
             android:layout_below="@+id/tvsales"
             android:layout_centerHorizontal="true"
             android:text="31 - Aug - 2017"
-            android:id="@+id/dateSalesAfter" />
+            android:id="@+id/dateSalesAfter"
+            android:background="@color/colorLight"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginLeft="5dp"/>
 
     </LinearLayout>
 
@@ -57,6 +66,9 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="40dp"
-        android:layout_marginRight="40dp"/>
+        android:layout_marginRight="40dp"
+        android:id="@+id/btnAddSales"
+        android:onClick="onClick"
+        />
 
 </RelativeLayout>

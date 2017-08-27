@@ -1,10 +1,13 @@
 package com.hrtz.pos.modal;
 
+import java.io.Serializable;
+
 /**
  * Created by harit on 8/21/2017.
  */
 
-public class Inventory {
+public class Inventory implements Serializable{
+    public static final String BUNDLE_TAG = "inventoryObject";
     private int id;
     private String name;
     private int stock, price;
@@ -56,4 +59,10 @@ public class Inventory {
     public void setPrice(int price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 }

@@ -30,46 +30,46 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        InventoryDbHelper dbHelper = new InventoryDbHelper(getApplicationContext());
-
-        Inventory inven1 = new Inventory("Barang 1", 10, 1000);
-        Inventory inven2 = new Inventory("Barang 2", 20, 2000);
-        Inventory inven3 = new Inventory("Barang 3", 30, 3000);
-
-
-        long inven1_id = dbHelper.createInventory(inven1);
-        long inven2_id = dbHelper.createInventory(inven2);
-        long inven3_id = dbHelper.createInventory(inven3);
-
-        Log.d("Inventory insert", "Inserting fragment_inventory");
-
-        List<Inventory> inventories = dbHelper.getAllInventories();
-        for(int i = 0; i < inventories.size(); i++){
-            Inventory in = inventories.get(i);
-            Log.d("fragment_inventory list:", in.getId()+" | "+in.getName()+ " | "+in.getPrice()+" | "+in.getStock());
-        }
-
-        Sales_Inventory si1 = new Sales_Inventory(inven1_id, 5, inven1.getPrice()*5);
-        Sales_Inventory si2 = new Sales_Inventory(inven2_id, 6, inven1.getPrice()*6);
-        Sales_Inventory si3 = new Sales_Inventory(inven3_id, 7, inven1.getPrice()*7);
-
-        Sales_Inventory[] siarray1 = new Sales_Inventory[]{si1, si2, si3};
-        dbHelper.createSales(new Sales(50000), siarray1, si1.getTotal()+si2.getTotal()+si3.getTotal());
-
-        List<Sales> sales = dbHelper.getAllSales();
-
-        for(Sales s: sales){
-            Log.d("sales list", "sale id: "+s.getId()+" | "+s.getCreated_at());
-            List<Sales_Inventory> slist = s.getSales_inventoryList();
-            for(int i = 0; i < slist.size(); i++){
-                Sales_Inventory si = slist.get(i);
-                Log.d("fragment_inventory list for", "sale id: "+s.getId()+" | "+si.getInventory()+ " | "+si.getId_inventory());
-            }
-
-        }
-        dbHelper.close();
-
+//
+//        InventoryDbHelper dbHelper = new InventoryDbHelper(getApplicationContext());
+//
+//        Inventory inven1 = new Inventory("Barang 1", 10, 1000);
+//        Inventory inven2 = new Inventory("Barang 2", 20, 2000);
+//        Inventory inven3 = new Inventory("Barang 3", 30, 3000);
+//
+//
+//        long inven1_id = dbHelper.createInventory(inven1);
+//        long inven2_id = dbHelper.createInventory(inven2);
+//        long inven3_id = dbHelper.createInventory(inven3);
+//
+//        Log.d("Inventory insert", "Inserting fragment_inventory");
+//
+//        List<Inventory> inventories = dbHelper.getAllInventories();
+//        for(int i = 0; i < inventories.size(); i++){
+//            Inventory in = inventories.get(i);
+//            Log.d("fragment_inventory list:", in.getId()+" | "+in.getName()+ " | "+in.getPrice()+" | "+in.getStock());
+//        }
+//
+//        Sales_Inventory si1 = new Sales_Inventory(inven1_id, 5, inven1.getPrice()*5);
+//        Sales_Inventory si2 = new Sales_Inventory(inven2_id, 6, inven2.getPrice()*6);
+//        Sales_Inventory si3 = new Sales_Inventory(inven3_id, 7, inven3.getPrice()*7);
+//
+//        Sales_Inventory[] siarray1 = new Sales_Inventory[]{si1, si2, si3};
+//        dbHelper.createSales(siarray1, si1.getTotal()+si2.getTotal()+si3.getTotal());
+//
+//        List<Sales> sales = dbHelper.getAllSales();
+//
+//        for(Sales s: sales){
+//            Log.d("sales list", "sale id: "+s.getId()+" | "+s.getCreated_at());
+//            List<Sales_Inventory> slist = s.getSales_inventoryList();
+//            for(int i = 0; i < slist.size(); i++){
+//                Sales_Inventory si = slist.get(i);
+//                Log.d("fragment_inventory list for", "sale id: "+s.getId()+" | "+si.getInventory()+ " | "+si.getId_inventory());
+//            }
+//
+//        }
+//
+//        dbHelper.close();
 
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -98,13 +98,21 @@ public class MainActivity extends AppCompatActivity
         int id = v.getId();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
         Log.d("clicked", "onclickclicke");
         if (id == R.id.btnInventory) {
-            ft.replace(R.id.fragment_placeholder, new InventoryFragment());
+            ft.add(R.id.fragment_placeholder, new InventoryFragment());
         }
         if(id == R.id.btnPenjualan){
-            ft.replace(R.id.fragment_placeholder, new SalesFragment());
+            ft.add(R.id.fragment_placeholder, new SalesFragment());
         }
+        if(id == R.id.btnAddInventory){
+            ft.add(R.id.fragment_placeholder, new InventoryForm());
+        }
+        if(id == R.id.btnAddSales){
+            ft.add(R.id.fragment_placeholder, new SalesForm());
+        }
+        ft.addToBackStack(null);
         ft.commit();
     }
 
