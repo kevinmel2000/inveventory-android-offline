@@ -1,5 +1,6 @@
 package com.hrtz.pos;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -8,11 +9,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -23,17 +25,64 @@ import com.hrtz.pos.modal.InventoryDbHelper;
 import com.hrtz.pos.modal.Sales;
 import com.hrtz.pos.modal.Sales_Inventory;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 /**
  * Created by harit on 8/23/2017.
  */
 
-public class SalesFragment extends Fragment implements FragmentManager.OnBackStackChangedListener {
+public class SalesFragment extends Fragment implements FragmentManager.OnBackStackChangedListener, View.OnClickListener {
     List<Sales> salesList;
     ListView lv;
     SalesAdapter salesAdapter;
     InventoryDbHelper dbHelper;
+    Button btnDateBegin, btnDateEnd;
+    Calendar beginCalendar = Calendar.getInstance();
+    Calendar endCalendar = Calendar.getInstance();
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+    DatePickerDialog.OnDateSetListener beginDate = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                              int dayOfMonth) {
+            // TODO Auto-generated method stub
+            beginCalendar.set(Calendar.YEAR, year);
+            beginCalendar.set(Calendar.MONTH, monthOfYear);
+            beginCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            calendarChanged();
+        }
+    };
+
+
+    DatePickerDialog.OnDateSetListener endDate = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                              int dayOfMonth) {
+            // TODO Auto-generated method stub
+            endCalendar.set(Calendar.YEAR, year);
+            endCalendar.set(Calendar.MONTH, monthOfYear);
+            endCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            calendarChanged();
+        }
+    };
+
+    /**
+     * when the user finishes editing time
+     */
+    private void calendarChanged() {
+        btnDateEnd.setText(format.format(endCalendar.getTime()));
+        btnDateBegin.setText(format.format(beginCalendar.getTime()));
+
+        salesList = dbHelper.getAllSalesBetween(format.format(beginCalendar.getTime()), format.format(endCalendar.getTime()));
+
+        salesAdapter = new SalesAdapter(salesList, getActivity().getApplicationContext());
+
+        salesAdapter.notifyDataSetChanged();
+        lv.setAdapter(salesAdapter);
+    }
+
 
     @Nullable
     @Override
@@ -43,6 +92,15 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        //set the begin date a week before
+        beginCalendar.add(Calendar.DAY_OF_MONTH, -7);
+
+        //finding the reference to these two button
+        btnDateBegin = (Button) view.findViewById(R.id.dateSalesBegin);
+        btnDateEnd = (Button) view.findViewById(R.id.dateSalesEnd);
+        btnDateBegin.setOnClickListener(this);
+        btnDateEnd.setOnClickListener(this);
+
         lv = (ListView) view.findViewById(R.id.lvSales);
         dbHelper = new InventoryDbHelper(getActivity().getApplicationContext());
         salesList = dbHelper.getAllSales();
@@ -51,8 +109,6 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
         lv.setAdapter(salesAdapter);
 
         getFragmentManager().addOnBackStackChangedListener(this);
-
-
     }
 
 
@@ -65,6 +121,23 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
             salesAdapter = new SalesAdapter(salesList, getActivity().getApplicationContext());
             lv.setAdapter(salesAdapter);
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.dateSalesBegin:
+                new DatePickerDialog(getActivity(), beginDate, beginCalendar
+                        .get(Calendar.YEAR), beginCalendar.get(Calendar.MONTH),
+                        beginCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                break;
+            case R.id.dateSalesEnd:
+                new DatePickerDialog(getActivity(), endDate, endCalendar
+                        .get(Calendar.YEAR), endCalendar.get(Calendar.MONTH),
+                        endCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                break;
+        }
+
     }
 
     class SalesAdapter extends BaseAdapter implements ListAdapter {

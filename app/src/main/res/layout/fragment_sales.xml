@@ -42,7 +42,7 @@
             android:layout_below="@+id/tvsales"
             android:layout_centerHorizontal="true"
             android:text="31 - Aug - 2017"
-            android:id="@+id/dateSalesAfter"
+            android:id="@+id/dateSalesEnd"
             android:background="@color/colorLight"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
@@ -50,8 +50,16 @@
 
     </LinearLayout>
 
+<View
+    android:layout_below="@id/layout_date"
+    android:layout_width="match_parent"
+    android:layout_height="2dp"
+    android:background="@color/colorLight"
+    android:layout_marginTop="5dp"
+    />
 
     <ListView
+        android:layout_marginTop="8dp"
         android:layout_below="@id/layout_date"
         android:id="@+id/lvSales"
         android:layout_width="match_parent"

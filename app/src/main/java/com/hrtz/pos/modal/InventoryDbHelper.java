@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -196,8 +197,71 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         return tag_id;
     }
 
+
     /**
-     * getting all inventories
+     *
+     * @param begin beginning date, in yyyy-MM-dd format
+     * @param end end date, in yyyy-MM-dd format
+     * @return all sales between dates
+     */
+    public List<Sales> getAllSalesBetween(String begin, String end) {
+        List<Sales> sales = new ArrayList<Sales>();
+
+
+        String selectQuery = "SELECT  * FROM " + SALES_TABLE_NAME +" WHERE "+KEY_CREATED_AT+" BETWEEN "
+                +begin+" AND "+end;
+        Log.e("queery", selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Sales sale = new Sales();
+                sale.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                sale.setCreated_at(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+                sale.setTotal(c.getInt(c.getColumnIndex(SALES_COLUMN_NAME_TOTAL)));
+                // adding to todo list
+                sales.add(sale);
+            } while (c.moveToNext());
+        }
+
+        //get transactions for each sales
+        for (Sales s : sales) {
+            selectQuery = "SELECT * FROM " + SALESINVENTORY_TABLE_NAME +" si, "+
+                    INVENTORY_TABLE_NAME+" inventory WHERE si."+SALESINVENTORY_COLUMN_SALES_ID
+                    +" = "+s.getId()+" AND si."+SALESINVENTORY_COLUMN_INVENTORY_ID+" = inventory."+KEY_ID;
+
+            Log.e(LOG, selectQuery);
+
+            c = db.rawQuery(selectQuery, null);
+            // looping through all rows and adding to list
+            List<Sales_Inventory> salesList = new ArrayList<Sales_Inventory>();
+
+            if (c.moveToFirst()) {
+                do {
+                    Sales_Inventory sale = new Sales_Inventory();
+                    String nameInventory = c.getString(c.getColumnIndex(INVENTORY_COLUMN_NAME_TITLE));
+                    int price = c.getInt(c.getColumnIndex(INVENTORY_COLUMN_NAME_PRICE));
+                    int stock = c.getInt(c.getColumnIndex(INVENTORY_COLUMN_NAME_STOCK));
+
+                    sale.setInventory(new Inventory(nameInventory, stock, price));
+                    int count = c.getInt(c.getColumnIndex(SALESINVENTORY_COLUMN_COUNT));
+
+                    sale.setCount(count);
+
+                    salesList.add(sale);
+                } while (c.moveToNext());
+            }
+
+            s.setSales_inventoryList(salesList);
+        }
+        return sales;
+    }
+
+    /**
+     * getting all sales
      * */
     public List<Sales> getAllSales() {
         List<Sales> sales = new ArrayList<Sales>();
