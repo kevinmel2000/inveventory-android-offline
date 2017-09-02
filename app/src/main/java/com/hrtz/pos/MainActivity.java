@@ -106,11 +106,17 @@ public class MainActivity extends AppCompatActivity
         if(id == R.id.btnPenjualan){
             ft.add(R.id.fragment_placeholder, new SalesFragment());
         }
+        if(id == R.id.btnPembelian){
+            ft.add(R.id.fragment_placeholder, new PurchaseFragment());
+        }
         if(id == R.id.btnAddInventory){
             ft.add(R.id.fragment_placeholder, new InventoryForm());
         }
         if(id == R.id.btnAddSales){
             ft.add(R.id.fragment_placeholder, new SalesForm());
+        }
+        if(id == R.id.btnAddPurchase){
+            ft.add(R.id.fragment_placeholder, new PurchaseForm());
         }
         ft.addToBackStack(null);
         ft.commit();

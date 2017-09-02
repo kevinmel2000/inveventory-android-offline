@@ -23,8 +23,8 @@ import android.widget.Toast;
 
 import com.hrtz.pos.modal.Inventory;
 import com.hrtz.pos.modal.InventoryDbHelper;
-import com.hrtz.pos.modal.Sales;
-import com.hrtz.pos.modal.Sales_Inventory;
+import com.hrtz.pos.modal.Purchase;
+import com.hrtz.pos.modal.Purchase_Inventory;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,10 +34,10 @@ import java.util.List;
  * Created by harit on 8/23/2017.
  */
 
-public class SalesFragment extends Fragment implements FragmentManager.OnBackStackChangedListener, View.OnClickListener {
-    List<Sales> salesList;
+public class PurchaseFragment extends Fragment implements FragmentManager.OnBackStackChangedListener, View.OnClickListener {
+    List<Purchase> purchaseList;
     ListView lv;
-    SalesAdapter salesAdapter;
+    PurchaseAdapter purchaseAdapter;
     InventoryDbHelper dbHelper;
     Button btnDateBegin, btnDateEnd;
     Calendar beginCalendar = Calendar.getInstance();
@@ -86,19 +86,19 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
         btnDateEnd.setText(format.format(endCalendar.getTime()));
         btnDateBegin.setText(format.format(beginCalendar.getTime()));
 
-        salesList = dbHelper.getAllSalesBetween(format.format(beginCalendar.getTime()), format.format(endCalendar.getTime()));
-        tvgrandtotal.setText("Total penjualan: "+sumList(salesList));
+        purchaseList = dbHelper.getAllPurchasesBetween(format.format(beginCalendar.getTime()), format.format(endCalendar.getTime()));
+        tvgrandtotal.setText("Total pembelian: "+sumList(purchaseList));
 
-        salesAdapter = new SalesAdapter(salesList, getActivity().getApplicationContext());
+        purchaseAdapter = new PurchaseAdapter(purchaseList, getActivity().getApplicationContext());
 
-        salesAdapter.notifyDataSetChanged();
-        lv.setAdapter(salesAdapter);
+        purchaseAdapter.notifyDataSetChanged();
+        lv.setAdapter(purchaseAdapter);
     }
 
-    public int sumList(List<Sales> list) {
+    public int sumList(List<Purchase> list) {
         int sum = 0;
 
-        for (Sales s : list)
+        for (Purchase s : list)
             sum = sum + s.getTotal();
 
         return sum;
@@ -107,21 +107,21 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_sales, parent, false);
+        return inflater.inflate(R.layout.fragment_purchase, parent, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
-        tvgrandtotal = (TextView) view.findViewById(R.id.tv_fragment_sales_total);
+        tvgrandtotal = (TextView) view.findViewById(R.id.tv_fragment_purchase_total);
 
         //finding the reference to these two button
-        btnDateBegin = (Button) view.findViewById(R.id.dateSalesBegin);
-        btnDateEnd = (Button) view.findViewById(R.id.dateSalesEnd);
+        btnDateBegin = (Button) view.findViewById(R.id.datePurchaseBegin);
+        btnDateEnd = (Button) view.findViewById(R.id.datePurchaseEnd);
         btnDateBegin.setOnClickListener(this);
         btnDateEnd.setOnClickListener(this);
 
-        lv = (ListView) view.findViewById(R.id.lvSales);
+        lv = (ListView) view.findViewById(R.id.lvPurchase);
         dbHelper = new InventoryDbHelper(getActivity().getApplicationContext());
 
         //set the begin date a week before
@@ -148,12 +148,12 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.dateSalesBegin:
+            case R.id.datePurchaseBegin:
                 new DatePickerDialog(getActivity(), beginDate, beginCalendar
                         .get(Calendar.YEAR), beginCalendar.get(Calendar.MONTH),
                         beginCalendar.get(Calendar.DAY_OF_MONTH)).show();
                 break;
-            case R.id.dateSalesEnd:
+            case R.id.datePurchaseEnd:
                 new DatePickerDialog(getActivity(), endDate, endCalendar
                         .get(Calendar.YEAR), endCalendar.get(Calendar.MONTH),
                         endCalendar.get(Calendar.DAY_OF_MONTH)).show();
@@ -162,12 +162,12 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
 
     }
 
-    class SalesAdapter extends BaseAdapter implements ListAdapter {
-        private  List<Sales> list;
+    class PurchaseAdapter extends BaseAdapter implements ListAdapter {
+        private  List<Purchase> list;
         private Context context;
 
-        public SalesAdapter(List<Sales> salesList, Context applicationContext) {
-            list = salesList;
+        public PurchaseAdapter(List<Purchase> purchaseList, Context applicationContext) {
+            list = purchaseList;
             context = applicationContext;
         }
 
@@ -193,18 +193,18 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
             View view = convertView;
             if(view == null){
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = inflater.inflate(R.layout.sales_list_item, null);
+                view = inflater.inflate(R.layout.purchase_list_item, null);
             }
 
             TextView tvDate, tvTotal, tvItemList;
-            tvDate = (TextView) view.findViewById(R.id.list_sales_date);
+            tvDate = (TextView) view.findViewById(R.id.list_purchase_date);
             tvDate.setText(list.get(position).getCreated_at());
-            tvTotal = (TextView) view.findViewById(R.id.list_sales_total);
+            tvTotal = (TextView) view.findViewById(R.id.list_purchase_total);
             tvTotal.setText("Total: "+list.get(position).getTotal());
 
-            tvItemList = (TextView) view.findViewById(R.id.list_sales_details);
+            tvItemList = (TextView) view.findViewById(R.id.list_purchase_details);
             StringBuilder stringBuilder = new StringBuilder();
-            for(Sales_Inventory s: list.get(position).getSales_inventoryList()){
+            for(Purchase_Inventory s: list.get(position).getPurchase_inventoryList()){
                 Inventory i = s.getInventory();
                 stringBuilder.append(s.getCount()+" X "+i.getName() + " ("+i.getPrice()+" | "+s.getCount()*i.getPrice()+")");
                 stringBuilder.append(System.getProperty("line.separator"));
@@ -212,8 +212,8 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
             tvItemList.setText(stringBuilder.toString());
 
             //Handle buttons and add onClickListeners
-            ImageButton deleteBtn = (ImageButton)view.findViewById(R.id.btn_salesitem_delete);
-            ImageButton editBtn = (ImageButton)view.findViewById(R.id.btn_salesitem_edit);
+            ImageButton deleteBtn = (ImageButton)view.findViewById(R.id.btn_purchaseitem_delete);
+            ImageButton editBtn = (ImageButton)view.findViewById(R.id.btn_purchaseitem_edit);
 
             deleteBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -229,9 +229,9 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
                     alert.setButton(AlertDialog.BUTTON_POSITIVE, "Hapus", new DialogInterface.OnClickListener() {
 
                         public void onClick(DialogInterface dialog, int which) {
-                            dbHelper.deleteSales((int) salesList.get(position).getId());
-                            salesList.remove(position);
-                            salesAdapter.notifyDataSetChanged();
+                            dbHelper.deletePurchase((int) purchaseList.get(position).getId());
+                            purchaseList.remove(position);
+                            purchaseAdapter.notifyDataSetChanged();
                             dialog.dismiss();
                         }
                     });
@@ -253,14 +253,14 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
                     ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
                     Bundle bundle = new Bundle();
-                    Sales i = salesList.get(position);
+                    Purchase i = purchaseList.get(position);
 
-                    bundle.putSerializable(Sales.BUNDLE_TAG, i);
+                    bundle.putSerializable(Purchase.BUNDLE_TAG, i);
 
 
-                    SalesFormEdit salesFormEditFragment = new SalesFormEdit();
-                    salesFormEditFragment.setArguments(bundle);
-                    ft.add(R.id.fragment_placeholder, salesFormEditFragment);
+                    PurchaseFormEdit purchaseFormEditFragment = new PurchaseFormEdit();
+                    purchaseFormEditFragment.setArguments(bundle);
+                    ft.add(R.id.fragment_placeholder, purchaseFormEditFragment);
 
 
                     ft.addToBackStack(null);
@@ -274,4 +274,6 @@ public class SalesFragment extends Fragment implements FragmentManager.OnBackSta
 
     }
 
+
 }
+

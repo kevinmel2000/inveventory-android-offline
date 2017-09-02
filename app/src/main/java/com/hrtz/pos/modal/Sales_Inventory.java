@@ -53,4 +53,7 @@ public class Sales_Inventory {
     public void setTotal(int total) {
         this.total = total;
     }
+
+
+
 }

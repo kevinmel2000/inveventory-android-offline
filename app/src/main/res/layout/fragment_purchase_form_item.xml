@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/purchase_form_relativelayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginTop="10dp">
+
+    <AutoCompleteTextView
+        android:id="@+id/purchase_form_autocomplete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:hint="Nama barang"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/purchase_form_edittext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/purchase_form_autocomplete"
+        android:hint="Quantity"
+        android:inputType="number" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/purchase_form_edittext"
+        android:layout_alignBaseline="@+id/purchase_form_edittext"
+        android:text="X 6000 = "
+        android:layout_marginLeft="40dp"
+        android:id="@+id/tv_purchaseformitem_total"
+        />
+
+    <ImageButton
+        android:id="@+id/btn_purchaseformitem_deleteRecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/purchase_form_autocomplete"
+        android:layout_gravity="right"
+        android:src="@drawable/ic_delete_forever_red_300_36dp" />
+
+
+    <View
+        android:layout_marginTop="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@id/purchase_form_edittext"
+        android:background="#00ffaa"
+        android:elevation="4dp"/>
+</RelativeLayout>
+

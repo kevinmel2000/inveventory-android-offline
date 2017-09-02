@@ -21,8 +21,8 @@ public class Inventory implements Serializable{
      * @param stock stock awal barang
      * @param price harga barang
      */
-    public Inventory(String name, int stock, int price) {
-
+    public Inventory(int id, String name, int stock, int price) {
+        this.id = id;
         this.name = name;
         this.stock = stock;
         this.price = price;

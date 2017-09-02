@@ -23,13 +23,13 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tambah Pembelian"
+            android:text="Tambah Penjualan"
             android:gravity="center"
             android:layout_margin="10dp"
             android:textStyle="bold"
             android:textSize="20sp"
             android:textColor="#ffffff"
-            android:id="@+id/tvtitleaddsales"/>
+            android:id="@+id/tvtitleaddpurchase"/>
 
 
     </LinearLayout>
@@ -48,7 +48,7 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/content_sales_form"
+                android:id="@+id/content_purchase_form"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -65,17 +65,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:id="@+id/btn_salesform_addinventory"
+                android:id="@+id/btn_purchaseform_addinventory"
                 android:text="Tambah Record" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Total Belanja: "
-                android:id="@+id/tv_salesform_total"/>
+                android:id="@+id/tv_purchaseform_total"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/btn_salesform_submit"
+                android:id="@+id/btn_purchaseform_submit"
                 android:text="Simpan Transaksi" />
         </LinearLayout>
     </ScrollView>

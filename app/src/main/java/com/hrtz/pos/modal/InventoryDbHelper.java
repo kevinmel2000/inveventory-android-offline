@@ -25,7 +25,7 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
     private static final String LOG = InventoryDbHelper.class.getName();
 
 
-    public final static int DATABASE_VERSION = 2;
+    public final static int DATABASE_VERSION = 4;
     public final static String DATABASE_NAME = "Inventory.db";
 
     //table and column for fragment_inventory
@@ -43,6 +43,17 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
     private static final String SALESINVENTORY_COLUMN_SALES_ID = "sales_id";
     private static final String SALESINVENTORY_COLUMN_INVENTORY_ID = "inventory_id";
     private static final String SALESINVENTORY_COLUMN_COUNT = "count";
+
+    //table and column for purchase
+    private static final String PURCHASE_TABLE_NAME = "purchase";
+    private static final String PURCHASE_COLUMN_NAME_TOTAL = "total";
+
+    //table and column for purchaseinventory
+    private static final String PURCHASEINVENTORY_TABLE_NAME = "purchase_inventory";
+    private static final String PURCHASEINVENTORY_COLUMN_PURCHASE_ID = "purchase_id";
+    private static final String PURCHASEINVENTORY_COLUMN_INVENTORY_ID = "inventory_id";
+    private static final String PURCHASEINVENTORY_COLUMN_COUNT = "count";
+
 
     // Common column names
     private static final String KEY_ID = "id";
@@ -70,6 +81,21 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
                     SALESINVENTORY_COLUMN_INVENTORY_ID+ " INTEGER," +
                     SALESINVENTORY_COLUMN_COUNT + " INTEGER)";
 
+
+    private static final String SQL_CREATE_PURCHASE_TABLE =
+            "CREATE TABLE " + PURCHASE_TABLE_NAME + " (" +
+                    KEY_ID + " INTEGER PRIMARY KEY," +
+                    PURCHASE_COLUMN_NAME_TOTAL + " TEXT," +
+                    KEY_CREATED_AT +" DATETIME)";
+
+
+    private static final String SQL_CREATE_PURCHASE_INVENTORY_TABLE =
+            "CREATE TABLE " + PURCHASEINVENTORY_TABLE_NAME + " (" +
+                    KEY_ID + " INTEGER PRIMARY KEY," +
+                    PURCHASEINVENTORY_COLUMN_PURCHASE_ID+ " INTEGER," +
+                    PURCHASEINVENTORY_COLUMN_INVENTORY_ID+ " INTEGER," +
+                    PURCHASEINVENTORY_COLUMN_COUNT + " INTEGER)";
+
     public InventoryDbHelper(Context context){
 
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -81,6 +107,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_INVENTORY_TABLE);
         db.execSQL(SQL_CREATE_SALES_TABLE);
         db.execSQL(SQL_CREATE_SALES_INVENTORY_TABLE);
+        db.execSQL(SQL_CREATE_PURCHASE_TABLE);
+        db.execSQL(SQL_CREATE_PURCHASE_INVENTORY_TABLE);
     }
 
     @Override
@@ -89,7 +117,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + INVENTORY_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SALES_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SALESINVENTORY_TABLE_NAME);
-
+        db.execSQL("DROP TABLE IF EXISTS " + PURCHASE_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PURCHASEINVENTORY_TABLE_NAME);
         // create new tables
         onCreate(db);
     }
@@ -134,10 +163,15 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         return inventories;
     }
 
-
+    /**
+     * delete inventory records
+     * @param id inventory id
+     */
     public void deleteInventory(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(INVENTORY_TABLE_NAME, KEY_ID + " = ?",
+                new String[] { String.valueOf(id) });
+        db.delete(SALESINVENTORY_TABLE_NAME, SALESINVENTORY_COLUMN_INVENTORY_ID + " = ?",
                 new String[] { String.valueOf(id) });
     }
 
@@ -158,6 +192,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
                 new String[] { String.valueOf(inventory.getId()) });
     }
 
+
+
     /**
      * Creating a todo
      */
@@ -174,29 +210,39 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         for (Sales_Inventory si : sales_inventories) {
             createSalesInventory(sales_id, si);
         }
-
-
-
         return sales_id;
     }
 
+
     /**
-     * Creating tag
+     * Creating a todo
      */
-    public long createSalesInventory(long sales_id, Sales_Inventory si) {
+    public long updateSales(Sales sales, Sales_Inventory[] sales_inventories, int total) {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        db.delete(SALESINVENTORY_TABLE_NAME, SALESINVENTORY_COLUMN_SALES_ID + " = ?",
+                new String[] { String.valueOf(sales.getId()) });
+        Log.v("delete", "scuces");
+
         ContentValues values = new ContentValues();
-        values.put(SALESINVENTORY_COLUMN_SALES_ID, sales_id);
-        values.put(SALESINVENTORY_COLUMN_INVENTORY_ID, si.getInventory().getId());
-        values.put(SALESINVENTORY_COLUMN_COUNT, si.getCount());
+        values.put(SALES_COLUMN_NAME_TOTAL, total);
 
-        // insert row
-        long tag_id = db.insert(SALESINVENTORY_TABLE_NAME, null, values);
+        // updating row
+        db.update(SALES_TABLE_NAME, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(sales.getId()) });
 
-        return tag_id;
+
+        db.close();
+        Log.v("update", "scuces");
+        // insert tag_ids
+        for (Sales_Inventory si : sales_inventories) {
+            createSalesInventory(sales.getId(), si);
+            Log.v("update sales : ", si.getInventory().getName()+ " | "+si.getCount()+"|"
+                    +sales.getId()+"|"+si.getInventory().getId());
+        }
+
+        return sales.getId();
     }
-
 
     /**
      *
@@ -208,8 +254,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         List<Sales> sales = new ArrayList<Sales>();
 
 
-        String selectQuery = "SELECT  * FROM " + SALES_TABLE_NAME +" WHERE "+KEY_CREATED_AT+" BETWEEN "
-                +begin+" AND "+end;
+        String selectQuery = "SELECT  * FROM " + SALES_TABLE_NAME +" WHERE "+KEY_CREATED_AT+" BETWEEN '"
+                +begin+"' AND '"+end+" 23:59:59'";
         Log.e("queery", selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -245,8 +291,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
                     String nameInventory = c.getString(c.getColumnIndex(INVENTORY_COLUMN_NAME_TITLE));
                     int price = c.getInt(c.getColumnIndex(INVENTORY_COLUMN_NAME_PRICE));
                     int stock = c.getInt(c.getColumnIndex(INVENTORY_COLUMN_NAME_STOCK));
-
-                    sale.setInventory(new Inventory(nameInventory, stock, price));
+                    int id = c.getInt(c.getColumnIndex(KEY_ID));
+                    sale.setInventory(new Inventory(id, nameInventory, stock, price));
                     int count = c.getInt(c.getColumnIndex(SALESINVENTORY_COLUMN_COUNT));
 
                     sale.setCount(count);
@@ -259,6 +305,172 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         }
         return sales;
     }
+
+
+    public void deleteSales(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(SALES_TABLE_NAME, KEY_ID + " = ?",
+                new String[] { String.valueOf(id) });
+        db.delete(SALESINVENTORY_TABLE_NAME, SALESINVENTORY_COLUMN_SALES_ID + " = ?",
+                new String[] {String.valueOf(id)});
+
+    }
+    /**
+     * Creating tag
+     */
+    public long createSalesInventory(long sales_id, Sales_Inventory si) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(SALESINVENTORY_COLUMN_SALES_ID, sales_id);
+        values.put(SALESINVENTORY_COLUMN_INVENTORY_ID, si.getInventory().getId());
+        values.put(SALESINVENTORY_COLUMN_COUNT, si.getCount());
+
+        // insert row
+        long tag_id = db.insert(SALESINVENTORY_TABLE_NAME, null, values);
+        db.close();
+        return tag_id;
+    }
+
+
+
+    /**
+     * Creating a todo
+     */
+    public long createPurchase(Purchase_Inventory[] purchase_inventories, int total) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PURCHASE_COLUMN_NAME_TOTAL, total);
+        values.put(KEY_CREATED_AT, getDateTime());
+        // insert row
+        long purchase_id = db.insert(PURCHASE_TABLE_NAME, null, values);
+
+        // insert tag_ids
+        for (Purchase_Inventory si : purchase_inventories) {
+            createPurchaseInventory(purchase_id, si);
+        }
+        return purchase_id;
+    }
+
+
+    /**
+     * Creating a todo
+     */
+    public long updatePurchase(Purchase purchase, Purchase_Inventory[] purchase_inventories, int total) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(PURCHASEINVENTORY_TABLE_NAME, PURCHASEINVENTORY_COLUMN_PURCHASE_ID+ " = ?",
+                new String[] { String.valueOf(purchase.getId()) });
+
+
+        ContentValues values = new ContentValues();
+        values.put(PURCHASE_COLUMN_NAME_TOTAL, total);
+
+        // updating row
+        db.update(PURCHASE_TABLE_NAME, values, KEY_ID + " = ?",
+                new String[] { String.valueOf(purchase.getId()) });
+
+
+        db.close();
+
+        // insert tag_ids
+        for (Purchase_Inventory si : purchase_inventories) {
+            createPurchaseInventory(purchase.getId(), si);
+        }
+
+        return purchase.getId();
+    }
+
+    /**
+     *
+     * @param begin beginning date, in yyyy-MM-dd format
+     * @param end end date, in yyyy-MM-dd format
+     * @return all sales between dates
+     */
+    public List<Purchase> getAllPurchasesBetween(String begin, String end) {
+        List<Purchase> purchases = new ArrayList<Purchase>();
+
+
+        String selectQuery = "SELECT  * FROM " + PURCHASE_TABLE_NAME +" WHERE "+KEY_CREATED_AT+" BETWEEN '"
+                +begin+"' AND '"+end+" 23:59:59'";
+        Log.e("queery", selectQuery);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Purchase purchase = new Purchase();
+                purchase.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                purchase.setCreated_at(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+                purchase.setTotal(c.getInt(c.getColumnIndex(PURCHASE_COLUMN_NAME_TOTAL)));
+                // adding to todo list
+                purchases.add(purchase);
+            } while (c.moveToNext());
+        }
+
+        //get transactions for each sales
+        for (Purchase s : purchases) {
+            selectQuery = "SELECT * FROM " + PURCHASEINVENTORY_TABLE_NAME+" si, "+
+                    INVENTORY_TABLE_NAME+" inventory WHERE si."+PURCHASEINVENTORY_COLUMN_PURCHASE_ID
+                    +" = "+s.getId()+" AND si."+PURCHASEINVENTORY_COLUMN_INVENTORY_ID+" = inventory."+KEY_ID;
+
+            Log.e(LOG, selectQuery);
+
+            c = db.rawQuery(selectQuery, null);
+            // looping through all rows and adding to list
+            List<Purchase_Inventory> purchaseList = new ArrayList<Purchase_Inventory>();
+
+            if (c.moveToFirst()) {
+                do {
+                    Purchase_Inventory purchase = new Purchase_Inventory();
+                    String nameInventory = c.getString(c.getColumnIndex(INVENTORY_COLUMN_NAME_TITLE));
+                    int price = c.getInt(c.getColumnIndex(INVENTORY_COLUMN_NAME_PRICE));
+                    int stock = c.getInt(c.getColumnIndex(INVENTORY_COLUMN_NAME_STOCK));
+                    int id = c.getInt(c.getColumnIndex(KEY_ID));
+                    purchase.setInventory(new Inventory(id, nameInventory, stock, price));
+                    int count = c.getInt(c.getColumnIndex(PURCHASEINVENTORY_COLUMN_COUNT));
+
+                    purchase.setCount(count);
+
+                    purchaseList.add(purchase);
+                } while (c.moveToNext());
+            }
+
+            s.setPurchase_inventoryList(purchaseList);
+        }
+        return purchases;
+    }
+
+
+    public void deletePurchase(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(PURCHASE_TABLE_NAME, KEY_ID + " = ?",
+                new String[] { String.valueOf(id) });
+        db.delete(PURCHASEINVENTORY_TABLE_NAME, PURCHASEINVENTORY_COLUMN_PURCHASE_ID+ " = ?",
+                new String[] {String.valueOf(id)});
+
+    }
+    /**
+     * Creating tag
+     */
+    public long createPurchaseInventory(long purchase_id, Purchase_Inventory pi) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PURCHASEINVENTORY_COLUMN_PURCHASE_ID, purchase_id);
+        values.put(PURCHASEINVENTORY_COLUMN_INVENTORY_ID, pi.getInventory().getId());
+        values.put(PURCHASEINVENTORY_COLUMN_COUNT, pi.getCount());
+
+        // insert row
+        long tag_id = db.insert(PURCHASEINVENTORY_TABLE_NAME, null, values);
+        db.close();
+        return tag_id;
+    }
+
+
 
     /**
      * getting all sales
@@ -300,8 +512,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
                     String nameInventory = c.getString(c.getColumnIndex(INVENTORY_COLUMN_NAME_TITLE));
                     int price = c.getInt(c.getColumnIndex(INVENTORY_COLUMN_NAME_PRICE));
                     int stock = c.getInt(c.getColumnIndex(INVENTORY_COLUMN_NAME_STOCK));
-
-                    sale.setInventory(new Inventory(nameInventory, stock, price));
+                    int id = c.getInt(c.getColumnIndex(KEY_ID));
+                    sale.setInventory(new Inventory(id, nameInventory, stock, price));
                     int count = c.getInt(c.getColumnIndex(SALESINVENTORY_COLUMN_COUNT));
 
                     sale.setCount(count);
@@ -325,12 +537,4 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         return dateFormat.format(date);
     }
 
-    public void deleteSales(int id) {
-            SQLiteDatabase db = this.getWritableDatabase();
-            db.delete(SALES_TABLE_NAME, KEY_ID + " = ?",
-                    new String[] { String.valueOf(id) });
-            db.delete(SALESINVENTORY_TABLE_NAME, SALESINVENTORY_COLUMN_SALES_ID + " = ?",
-                new String[] {String.valueOf(id)});
-
-    }
 }

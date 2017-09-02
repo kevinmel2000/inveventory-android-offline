@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:paddingLeft="8dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textSize="16sp"
+            android:id="@+id/list_purchase_date"
+            android:textColor="#ffffff"
+            android:text="this is the datetime"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Total:  "
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:id="@+id/list_purchase_total"
+            android:textColor="#ffffff"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignBaseline="@id/list_purchase_date"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stock: 6"
+            android:id="@+id/list_purchase_details"
+            android:textColor="#000000"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="5dp"
+            android:layout_below="@+id/list_purchase_date"
+            android:layout_alignLeft="@+id/list_purchase_date"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_delete_forever_red_500_24dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="15dp"
+            android:layout_below="@id/list_purchase_total"
+            android:id="@+id/btn_purchaseitem_delete"
+            />
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_mode_edit_white_24dp"
+            android:layout_toLeftOf="@+id/btn_purchaseitem_delete"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="15dp"
+            android:layout_below="@id/list_purchase_total"
+            android:id="@+id/btn_purchaseitem_edit"
+            />
+
+    </RelativeLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#72B0D9"
+        />
+
+</LinearLayout>

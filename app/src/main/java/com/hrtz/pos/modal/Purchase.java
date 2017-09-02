@@ -1,34 +1,33 @@
 package com.hrtz.pos.modal;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by harit on 8/21/2017.
  */
 
-public class Sales implements Serializable {
-    public static final String BUNDLE_TAG = "salesObject";
+public class Purchase implements Serializable {
+    public static final String BUNDLE_TAG = "purchaseObject";
     private long id;
     private String created_at;
     private int total;
-    List<Sales_Inventory> sales_inventoryList;
+    List<Purchase_Inventory> purchase_inventoryList;
 
-    public Sales(int total) {
+    public Purchase(int total) {
         this.total = total;
     }
 
-    public Sales() {
+    public Purchase() {
 
     }
 
-    public List<Sales_Inventory> getSales_inventoryList() {
-        return sales_inventoryList;
+    public List<Purchase_Inventory> getPurchase_inventoryList() {
+        return purchase_inventoryList;
     }
 
-    public void setSales_inventoryList(List<Sales_Inventory> sales_inventoryList) {
-        this.sales_inventoryList = sales_inventoryList;
+    public void setPurchase_inventoryList(List<Purchase_Inventory> purchase_inventoryList) {
+        this.purchase_inventoryList = purchase_inventoryList;
     }
 
     public long getId() {
@@ -61,7 +60,7 @@ public class Sales implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Sales sales = (Sales) o;
+        Purchase sales = (Purchase) o;
         return (sales.getId() == this.getId() && this.getCreated_at() == sales.getCreated_at());
     }
 
